@@ -16,6 +16,8 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
     const [openGameModal, setOpenGameModal] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [selectedGame, setSelectedGame] = useState<GameDetail | null>(null);
+    const [loadingGames, setLoadingGames] = useState(false);
+    const [loadingGameDetail, setLoadingGameDetail] = useState(false);
 
     useEffect(() => {
         const handler = setTimeout(async () => {
@@ -24,23 +26,36 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
                 return;
             }
 
+            setLoadingGames(true);
+
             const res = await fetch(
                 `${BASE_URL}api/search?query=${encodeURIComponent(searchInput)}`,
                 { method: "POST" }
             );
-
             const data = await res.json();
             setGames(data?.result ?? []);
+            setLoadingGames(false);
         }, 300);
 
         return () => clearTimeout(handler);
     }, [searchInput, gamesData]);
 
     async function fetchGameDetail(id: number): Promise<GameDetail> {
-        const res = await fetch(`${BASE_URL}api/games/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch game details");
-        const data = await res.json();
-        return data.data[0];
+        setLoadingGameDetail(true);
+        try {
+            const res = await fetch(`${BASE_URL}api/games/${id}`);
+            if (!res.ok) throw new Error("Failed to fetch game details");
+            const data = await res.json();
+            return data.data[0];
+        } finally {
+            setLoadingGameDetail(false);
+        }
+    }
+
+    const handleGameClick = async (id: number) => {
+        const detail = await fetchGameDetail(id);
+        setSelectedGame(detail);
+        setOpenGameModal(true);
     }
 
     return (
@@ -49,6 +64,7 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
                 <GameModal
                     game={selectedGame}
                     isOpen={openGameModal}
+                    loading={loadingGameDetail}
                     onCloseAction={() => {
                         setOpenGameModal(false);
                         setSelectedGame(null);
@@ -69,21 +85,21 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
                     placeholder="Search games..."
                     className="w-full py-3 px-4 border rounded-lg"
                 />
-                {games.length === 0 ? (
+                {loadingGames ? (
+                    <div className="text-center py-16">
+                        <p>Loading games...</p>
+                    </div>
+                ) : games.length === 0 ? (
                     <div className="text-center py-16">
                         <p>No games found</p>
                     </div>
-                ): (
+                ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                         {games.map((game) => (
                             <GameCard
                                 key={game.id}
                                 game={game}
-                                onClick={async () => {
-                                    const detail = await fetchGameDetail(game.id);
-                                    setSelectedGame(detail);
-                                    setOpenGameModal(true);
-                                }}
+                                onClick={() => handleGameClick(game.id)}
                             />
                         ))}
                     </div>
