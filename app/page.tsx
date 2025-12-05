@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import GameCard from "@/app/components/GameCard";
+import GameModal, { GameDetail } from "@/app/components/GameModal";
 
 // Types
 type Game = {
@@ -26,9 +27,30 @@ const mockGames: Game[] = [
   { id: 10, title: "Pixel Town", category: "Casual", rating: 4, thumbnail: "https://placehold.co/400x400?text=Game-Image" },
 ];
 
+const mockGameDetail: GameDetail = {
+    id: 1,
+    title: "Dragon Quest",
+    category: "RPG",
+    rating: 4.5,
+    description: "Embark on a legendary adventure filled with dragons, heroes, and ancient magic.",
+    features: [
+        "Turn-based combat",
+        "Character customization",
+        "Epic story arcs",
+        "Open-world exploration"
+    ],
+    releaseDate: "2021-01-01",
+    thumbnail: "https://placehold.co/400x400?text=Game-Image",
+    screenshots: [
+        "https://placehold.co/400x720?text=Screen-shot-1",
+        "https://placehold.co/400x720?text=Screen-shot-2"
+    ]
+}
+
 export default function Home() {
   const [games] = useState<Game[]>(mockGames);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGame, setSelectedGame] = useState<GameDetail | null>(null);
 
   const filteredGames = games.filter((game) =>
       game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,7 +59,11 @@ export default function Home() {
 
   return (
       <div className="min-h-screen flex flex-col">
-        {/* Header */}
+          {/*Modal*/}
+          {selectedGame && (
+              <GameModal game={selectedGame} onClose={() => setSelectedGame(null)} />
+          )}
+          {/* Header */}
         <header className="py-6 px-8 border-b">
           <div className="text-center flex flex-col gap-1">
             <h1 className="text-2xl font-semibold">Game Library</h1>
@@ -46,7 +72,7 @@ export default function Home() {
         </header>
 
         {/* Main Content */}
-        <main className="p-8 flex flex-col gap-8">
+        <div className="p-8 flex flex-col gap-8">
           {/* Search */}
           <input
               type="text"
@@ -67,38 +93,20 @@ export default function Home() {
           {filteredGames.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 {filteredGames.map((game) => (
-                    <div
+                    <GameCard
                         key={game.id}
-                        className="border rounded-xl overflow-hidden"
-                    >
-                      <div className="relative aspect-square">
-                        <Image
-                            src={game.thumbnail}
-                            alt={game.title}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                        />
-                      </div>
-                      <div className="p-4 flex flex-col gap-2">
-                        <h3 className="font-semibold">{game.title}</h3>
-                        <div className="flex justify-between items-center">
-                    <span className="text-xs border px-2 py-1 rounded">
-                      {game.category}
-                    </span>
-                          <span className="text-sm">⭐ {game.rating}</span>
-                        </div>
-                      </div>
-                    </div>
+                        game={game}
+                        onClick={() => setSelectedGame(mockGameDetail)}
+                    />
                 ))}
               </div>
           )}
-        </main>
+        </div>
 
         {/* Footer */}
-        <footer className="py-6 text-center text-xs border-t">
+        <div className="py-6 text-center text-xs border-t">
           <p>Built with Next.js & TypeScript by Panu Tanavatavivat</p>
-        </footer>
+        </div>
       </div>
   );
 }
