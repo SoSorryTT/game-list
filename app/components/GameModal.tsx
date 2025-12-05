@@ -1,84 +1,74 @@
-import Image from 'next/image';
-import {
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter
-} from "@heroui/modal";
-import { Button } from "@heroui/button"
+"use client";
 
-export type GameDetail = {
-    id: number;
-    title: string;
-    category: string;
-    rating: number;
-    description: string;
-    features: string[];
-    releaseDate: string;
-    thumbnail: string;
-    screenshots: string[];
-};
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import Image from "next/image";
+import { GameDetail } from "@/app/types/GameDetail";
 
 type GameModalProps = {
-    game: GameDetail;
-    onClose: () => void;
+    game: GameDetail | null;
+    isOpen: boolean;
+    onCloseAction: () => void;
 };
 
-export default function GameModal({ game, onClose }: GameModalProps) {
+export default function GameModal({ game, isOpen, onCloseAction }: GameModalProps) {
+    if (!game) return null;
+
     return (
-        <Modal isOpen={true} onClose={onClose} placement="center">
-            <ModalContent>
-                {(close) => (
-                    <>
-                        {/* Header */}
-                        <ModalHeader className="flex flex-col gap-1">
-                            {game.title}
-                        </ModalHeader>
-
-                        {/* Body */}
-                        <ModalBody>
-
-                            {/* Image */}
-                            <div className="relative aspect-video">
+        <Transition appear show={isOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-50" onClose={onCloseAction}>
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-200"
+                        enterFrom="opacity-0 scale-95"
+                        enterTo="opacity-100 scale-100"
+                        leave="ease-in duration-150"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-95"
+                    >
+                        <Dialog.Panel className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-lg">
+                            <button
+                                onClick={onCloseAction}
+                                className="absolute top-4 right-4 px-3 py-1 text-sm border rounded-lg bg-white/80 hover:bg-gray-100"
+                            >
+                                Close
+                            </button>
+                            <Dialog.Title className="text-xl font-semibold mb-4 pr-16">
+                                {game.title}
+                            </Dialog.Title>
+                            <div className="relative aspect-video mb-4">
                                 <Image
                                     src={game.thumbnail}
                                     alt={game.title}
                                     fill
-                                    className="object-cover"
+                                    className="object-cover rounded-lg"
                                     unoptimized
                                 />
                             </div>
-
-                            {/* Badges */}
                             <div className="flex gap-2 my-2">
                                 <span className="text-xs border px-2 py-1 rounded">{game.category}</span>
                                 <span className="text-xs border px-2 py-1 rounded">⭐ {game.rating}</span>
                                 <span className="text-xs border px-2 py-1 rounded">{game.releaseDate}</span>
                             </div>
-
-                            {/* Description */}
-                            <p className="text-sm">{game.description}</p>
-
-                            {/* Features */}
-                            <div className="flex flex-col gap-2">
+                            <p className="text-sm mb-4">{game.description}</p>
+                            <div className="mb-4">
                                 <h3 className="font-semibold">Features</h3>
-                                <ul className="list-disc list-inside text-sm flex flex-col gap-1">
-                                    {game.features.map((feature, index) => (
-                                        <li key={index}>{feature}</li>
+                                <ul className="list-disc list-inside text-sm space-y-1">
+                                    {game.features?.map((feature, idx) => (
+                                        <li key={idx}>{feature}</li>
                                     ))}
                                 </ul>
                             </div>
-
-                            {/* Screenshots */}
-                            <div className="flex flex-col gap-2">
+                            <div className="mb-4">
                                 <h3 className="font-semibold">Screenshots</h3>
                                 <div className="grid grid-cols-2 gap-2">
-                                    {game.screenshots.map((shot, index) => (
-                                        <div key={index} className="relative aspect-[9/16]">
+                                    {game.screenshots?.map((shot, idx) => (
+                                        <div key={idx} className="relative aspect-[9/16]">
                                             <Image
                                                 src={shot}
-                                                alt={`${game.title} screenshot ${index + 1}`}
+                                                alt={`${game.title} screenshot ${idx + 1}`}
                                                 fill
                                                 className="object-cover rounded-lg"
                                                 unoptimized
@@ -87,18 +77,10 @@ export default function GameModal({ game, onClose }: GameModalProps) {
                                     ))}
                                 </div>
                             </div>
-
-                        </ModalBody>
-
-                        {/* Footer */}
-                        <ModalFooter>
-                            <Button color="danger" variant="light" onPress={close}>
-                                Close
-                            </Button>
-                        </ModalFooter>
-                    </>
-                )}
-            </ModalContent>
-        </Modal>
+                        </Dialog.Panel>
+                    </Transition.Child>
+                </div>
+            </Dialog>
+        </Transition>
     );
 }

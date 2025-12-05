@@ -1,12 +1,5 @@
 import Image from "next/image";
-
-type Game = {
-    id: number;
-    title: string;
-    category: string;
-    rating: number;
-    thumbnail: string;
-}
+import { Game } from "@/app/types/Game";
 
 type GameCardProps = {
     game: Game;
