@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GameModal from "@/app/components/GameModal";
 import GameCard from "@/app/components/GameCard";
 import { Game } from "@/app/types/Game";
@@ -14,8 +14,18 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
     const [games] = useState<Game[]>(gamesData);
     const [openGameModal, setOpenGameModal] = useState(false);
 
+    const [searchInput, setSearchInput] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+
     const [selectedGame, setSelectedGame] = useState<GameDetail | null>(null);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setSearchQuery(searchInput);
+        }, 300);
+
+        return () => clearTimeout(handler);
+    }, [searchInput]);
 
     const filteredGames = games.filter((game) =>
         game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -34,7 +44,6 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
         const data = await res.json();
         return data.data[0];
     }
-
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -57,8 +66,8 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
             <div className="p-8 flex flex-col gap-8">
                 <input
                     type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search games..."
                     className="w-full py-3 px-4 border rounded-lg"
                 />
