@@ -1,26 +1,19 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-steam-bg: #1b2838;
+  --color-steam-header: #171a21;
+  --color-steam-card: #16202d;
+  --color-steam-card-hover: #1e2e3d;
+  --color-steam-border: #2a475e;
+  --color-steam-accent: #66c0f4;
+  --color-steam-text: #c6d4df;
+  --color-steam-muted: #8b9bb4;
+  --color-steam-input: #316282;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-steam-bg);
+  color: var(--color-steam-text);
+  font-family: system-ui, -apple-system, sans-serif;
 }

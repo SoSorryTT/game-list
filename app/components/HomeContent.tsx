@@ -27,7 +27,6 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
             }
 
             setLoadingGames(true);
-
             const res = await fetch(
                 `${BASE_URL}api/search?query=${encodeURIComponent(searchInput)}`,
                 { method: "POST" }
@@ -71,42 +70,41 @@ export default function HomeContent({ gamesData }: HomeContentProps) {
                     }}
                 />
             )}
-            <div className="py-6 px-8 border-b">
-                <div className="text-center flex flex-col gap-1">
-                    <h1 className="text-2xl font-semibold">Game Library</h1>
-                    <p className="text-sm">Discover Games</p>
+            <div className="bg-steam-header py-4 px-6 border-b border-steam-border">
+                <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    <h1 className="text-xl font-semibold text-steam-text">GAME LIBRARY</h1>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            placeholder="Search..."
+                            className="w-64 py-2 px-4 bg-steam-input border-none rounded text-sm text-white placeholder-steam-muted focus:outline-none focus:ring-2 focus:ring-steam-accent"
+                        />
+                    </div>
                 </div>
             </div>
-            <div className="p-8 flex flex-col gap-8">
-                <input
-                    type="text"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Search games..."
-                    className="w-full py-3 px-4 border rounded-lg"
-                />
-                {loadingGames ? (
-                    <div className="text-center py-16">
-                        <p>Loading games...</p>
-                    </div>
-                ) : games.length === 0 ? (
-                    <div className="text-center py-16">
-                        <p>No games found</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                        {games.map((game) => (
-                            <GameCard
-                                key={game.id}
-                                game={game}
-                                onClick={() => handleGameClick(game.id)}
-                            />
-                        ))}
-                    </div>
-                )}
+            <div className="flex-1 px-6 py-6">
+                <div className="max-w-7xl mx-auto">
+                    {loadingGames ? (
+                        <div className="py-20 text-center text-steam-muted">Loading...</div>
+                    ) : games.length === 0 ? (
+                        <div className="py-20 text-center text-steam-muted">No games found</div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                            {games.map((game) => (
+                                <GameCard
+                                    key={game.id}
+                                    game={game}
+                                    onClick={() => handleGameClick(game.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
-            <div className="py-6 text-center text-xs border-t">
-                <p>Built with Next.js & TypeScript by Panu Tanavatavivat</p>
+            <div className="bg-steam-header py-4 px-6 border-t border-steam-border text-center text-xs text-steam-muted">
+                Built with Next.js & TypeScript by Panu Tanavatavivat
             </div>
         </div>
     );

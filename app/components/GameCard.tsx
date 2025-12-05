@@ -9,11 +9,10 @@ type GameCardProps = {
 export default function GameCard({ game, onClick }: GameCardProps) {
     return (
         <div
-            key={game.id}
-            className="border rounded-xl overflow-hidden cursor-pointer hover:opacity-50"
+            className="bg-steam-card rounded overflow-hidden cursor-pointer hover:bg-steam-card-hover transition-colors group"
             onClick={onClick}
         >
-            <div className="relative aspect-square">
+            <div className="relative aspect-[16/9]">
                 <Image
                     src={game.thumbnail}
                     alt={game.title}
@@ -22,13 +21,13 @@ export default function GameCard({ game, onClick }: GameCardProps) {
                     unoptimized
                 />
             </div>
-            <div className="p-4 flex flex-col gap-2">
-                <h3 className="font-semibold">{game.title}</h3>
-                <div className="flex justify-between items-center">
-                    <span className="text-xs border px-2 py-1 rounded">
-                      {game.category}
-                    </span>
-                    <span className="text-sm">⭐ {game.rating}</span>
+            <div className="p-3">
+                <h3 className="text-sm font-medium text-steam-text truncate group-hover:text-white transition-colors">
+                    {game.title}
+                </h3>
+                <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-steam-accent">{game.category}</span>
+                    <span className="text-xs text-steam-muted">{game.rating}/5</span>
                 </div>
             </div>
         </div>
